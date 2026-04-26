@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Полный список просмотра MCU</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0f;
+    color: #e0e0f0;
+    font-family: 'Arial Narrow', Arial, sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(232,22,27,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(245,166,35,0.08) 0%, transparent 50%);
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a0000 0%, #0a0a0f 50%, #0a0510 100%);
+    border-bottom: 3px solid #E8161B;
+    padding: 20px 16px 16px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 40px rgba(232,22,27,0.3);
+  }
+
+  .marvel-logo {
+    background: #E8161B;
+    color: #fff;
+    font-family: Impact, 'Arial Black', sans-serif;
+    font-size: 26px;
+    letter-spacing: 6px;
+    padding: 3px 18px;
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+
+  header h1 {
+    font-family: Impact, 'Arial Black', sans-serif;
+    font-size: clamp(16px, 5vw, 26px);
+    letter-spacing: 1px;
+    color: #fff;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  header p {
+    color: #F5A623;
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+
+  .progress-bar-wrap {
+    margin: 12px auto 0;
+    max-width: 400px;
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #7070a0;
+    margin-bottom: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .progress-label span:last-child { color: #F5A623; }
+
+  .progress-bar {
+    height: 6px;
+    background: #2a2a3a;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #E8161B, #F5A623);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    border-bottom: 1px solid #2a2a3a;
+    background: #0a0a0f;
+    position: sticky;
+    top: 148px;
+    z-index: 99;
+  }
+
+  .btn {
+    font-family: Impact, 'Arial Black', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border: 2px solid #2a2a3a;
+    background: transparent;
+    color: #7070a0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:hover { border-color: #E8161B; color: #e0e0f0; }
+  .btn.active { border-color: #E8161B; color: #E8161B; background: rgba(232,22,27,0.12); }
+
+  .btn-reset {
+    margin-left: auto;
+    border-color: rgba(232,22,27,0.3);
+    color: rgba(232,22,27,0.5);
+  }
+  .btn-reset:hover { border-color: #E8161B; color: #E8161B; background: rgba(232,22,27,0.1); }
+
+  main {
+    padding: 14px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .phase-section { margin-bottom: 24px; }
+
+  .phase-header {
+    font-family: Impact, 'Arial Black', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    padding: 10px 14px;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    text-transform: uppercase;
+  }
+
+  .phase-count {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  .phase-infinity   { background: linear-gradient(135deg, #1a3a8a, #0d1f4a); border-left: 4px solid #4a90d9; }
+  .phase-multiverse { background: linear-gradient(135deg, #4a1a8a, #1d0d4a); border-left: 4px solid #9b4de8; }
+  .phase-defenders  { background: linear-gradient(135deg, #1f1f1f, #0a0a0a); border-left: 4px solid #dd3333; }
+  .phase-multiverse2{ background: linear-gradient(135deg, #1a2a4a, #0a1525); border-left: 4px solid #3d8fd9; }
+  .phase-kang       { background: linear-gradient(135deg, #3a1a00, #1a0d00); border-left: 4px solid #F5A623; }
+  .phase-street     { background: linear-gradient(135deg, #2a1a3a, #110a1d); border-left: 4px solid #cc44cc; }
+  .phase-xmen       { background: linear-gradient(135deg, #3a1a00, #1d0d00); border-left: 4px solid #ff8c00; }
+  .phase-legacypre  { background: linear-gradient(135deg, #1a1a3a, #0a0a1d); border-left: 4px solid #8888ff; }
+  .phase-f4dp       { background: linear-gradient(135deg, #3a0a0a, #1d0505); border-left: 4px solid #E8161B; }
+  .phase-final      { background: linear-gradient(135deg, #2a2200, #151000); border-left: 4px solid #F5A623; }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1px;
+    background: #2a2a3a;
+    border: 1px solid #2a2a3a;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #13131c;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .item:hover, .item:active { background: #1c1c2a; }
+  .item.watched { background: rgba(20,50,20,0.6); }
+  .item.watched .item-title { text-decoration: line-through; color: #7070a0; }
+
+  .check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #3a3a5a;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    background: transparent;
+  }
+
+  .item.watched .check { background: #2d7a2d; border-color: #2d7a2d; }
+
+  .check-icon { display: none; color: #fff; font-size: 14px; font-weight: 900; line-height: 1; }
+  .item.watched .check-icon { display: block; }
+
+  .item-num {
+    font-size: 12px;
+    color: #7070a0;
+    min-width: 22px;
+    text-align: right;
+    font-weight: bold;
+  }
+
+  .item-title {
+    font-size: 14px;
+    font-weight: bold;
+    flex: 1;
+    transition: color 0.2s;
+    line-height: 1.3;
+  }
+
+  .new-badge {
+    font-size: 9px;
+    font-weight: 900;
+    background: #F5A623;
+    color: #000;
+    padding: 2px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .week-label {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #9090c0;
+    padding: 7px 14px 4px;
+    background: rgba(0,0,0,0.4);
+    grid-column: 1 / -1;
+    border-top: 1px solid #2a2a3a;
+  }
+
+  .week-label:first-child { border-top: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marvel-logo">MARVEL</div>
+  <h1>Полный список просмотра MCU</h1>
+  <p>Всё в идеальном порядке · До Мстителей: Судный день</p>
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span>Прогресс</span>
+      <span id="prog-text">0 / 95 просмотрено</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+  </div>
+</header>
+
+<div class="controls">
+  <button class="btn active" onclick="setFilter('all',this)">Все</button>
+  <button class="btn" onclick="setFilter('unwatched',this)">Не просмотрено</button>
+  <button class="btn" onclick="setFilter('watched',this)">Просмотрено</button>
+  <button class="btn btn-reset" onclick="resetAll()">Сбросить</button>
+</div>
+
+<main id="main"></main>
+
+<script>
+const phases = [
+  { id:'infinity', label:'Недели 1-4: Сага Бесконечности', cls:'phase-infinity', weeks:[
+    { label:'Неделя 1', items:[{n:1,t:'Железный человек'},{n:2,t:'Невероятный Халк'},{n:3,t:'Железный человек 2'},{n:4,t:'Тор'},{n:5,t:'Капитан Америка: Первый мститель'},{n:6,t:'Мстители'}]},
+    { label:'Неделя 2', items:[{n:7,t:'Железный человек 3'},{n:8,t:'Тор: Царство тьмы'},{n:9,t:'Капитан Америка: Зимний солдат'},{n:10,t:'Стражи Галактики'},{n:11,t:'Стражи Галактики. Часть 2'},{n:12,t:'Мстители: Эра Альтрона'}]},
+    { label:'Неделя 3', items:[{n:13,t:'Человек-муравей'},{n:14,t:'Первый мститель: Противостояние'},{n:15,t:'Чёрная пантера'},{n:16,t:'Человек-паук: Возвращение домой'},{n:17,t:'Доктор Стрэндж'},{n:18,t:'Тор: Рагнарёк'}]},
+    { label:'Неделя 4', items:[{n:19,t:'Мстители: Война бесконечности'},{n:20,t:'Человек-муравей и Оса'},{n:21,t:'Капитан Марвел'},{n:22,t:'Мстители: Финал'},{n:23,t:'Человек-паук: Вдали от дома'}]}
+  ]},
+  { id:'multiverse', label:'Недели 5-7: Подготовка мультивселенной', cls:'phase-multiverse', weeks:[
+    { label:'Неделя 5', items:[{n:24,t:'ВандаВижн'},{n:25,t:'Локи. Сезон 1'}]},
+    { label:'Неделя 6', items:[{n:26,t:'Что если...? Сезон 1'},{n:27,t:'Сокол и Зимний солдат'},{n:28,t:'Чёрная вдова'},{n:29,t:'Шан-Чи и легенда десяти колец'}]},
+    { label:'Неделя 7', items:[{n:30,t:'Вечные'},{n:31,t:'Соколиный глаз'}]}
+  ]},
+  { id:'defenders', label:'Недели 8-13: Сага Защитников', cls:'phase-defenders', weeks:[
+    { label:'Неделя 8', items:[{n:32,t:'Сорвиголова. Сезон 1'}]},
+    { label:'Неделя 9', items:[{n:33,t:'Джессика Джонс. Сезон 1'},{n:34,t:'Сорвиголова. Сезон 2'}]},
+    { label:'Неделя 10', items:[{n:35,t:'Люк Кейдж. Сезон 1'},{n:36,t:'Железный кулак. Сезон 1'}]},
+    { label:'Неделя 11', items:[{n:37,t:'Защитники'},{n:38,t:'Каратель. Сезон 1'}]},
+    { label:'Неделя 12', items:[{n:39,t:'Джессика Джонс. Сезон 2'},{n:40,t:'Люк Кейдж. Сезон 2'},{n:41,t:'Железный кулак. Сезон 2'}]},
+    { label:'Неделя 13', items:[{n:42,t:'Сорвиголова. Сезон 3'},{n:43,t:'Каратель. Сезон 2'},{n:44,t:'Джессика Джонс. Сезон 3'}]}
+  ]},
+  { id:'legacypre', label:'Неделя 14: Классический Человек-паук (до NWH)', cls:'phase-legacypre', weeks:[
+    { label:'Неделя 14', items:[{n:45,t:'Человек-паук (2002)'},{n:46,t:'Человек-паук 2'},{n:47,t:'Человек-паук 3'},{n:48,t:'Новый Человек-паук'},{n:49,t:'Новый Человек-паук: Высокое напряжение'}]}
+  ]},
+  { id:'venom', label:'Неделя 15: Веном + Нет пути домой', cls:'phase-multiverse2', weeks:[
+    { label:'Неделя 15', items:[{n:50,t:'Веном'},{n:51,t:'Веном 2: Карнаж'},{n:52,t:'Человек-паук: Нет пути домой',isNew:true}]}
+  ]},
+  { id:'multiverse2', label:'Недели 16-17: Расширение мультивселенной', cls:'phase-multiverse', weeks:[
+    { label:'Неделя 16', items:[{n:53,t:'Лунный рыцарь'},{n:54,t:'Доктор Стрэндж: В мультивселенной безумия'},{n:55,t:'Мисс Марвел'}]},
+    { label:'Неделя 17', items:[{n:56,t:'Тор: Любовь и гром'},{n:57,t:'Женщина-Халк'},{n:58,t:'Оборотень ночью'},{n:59,t:'Чёрная пантера: Ваканда навеки'}]}
+  ]},
+  { id:'kang', label:'Недели 18-19: Кэнг + Космическая дуга', cls:'phase-kang', weeks:[
+    { label:'Неделя 18', items:[{n:60,t:'Человек-муравей и Оса: Квантомания'},{n:61,t:'Стражи Галактики. Часть 3'},{n:62,t:'Тайное вторжение'}]},
+    { label:'Неделя 19', items:[{n:63,t:'Локи. Сезон 2',isNew:true},{n:64,t:'Марвел'}]}
+  ]},
+  { id:'street', label:'Неделя 20: Улица + Анимированная мультивселенная', cls:'phase-street', weeks:[
+    { label:'Неделя 20', items:[{n:65,t:'Эхо'},{n:66,t:'Люди Икс 97',isNew:true}]}
+  ]},
+  { id:'xmen', label:'Недели 21-22: Вселенная Людей Икс', cls:'phase-xmen', weeks:[
+    { label:'Неделя 21', items:[{n:67,t:'Люди Икс (2000)'},{n:68,t:'Люди Икс 2 (2003)'},{n:69,t:'Люди Икс: Последняя битва (2006)'},{n:70,t:'Люди Икс: Начало. Росомаха (2009)'},{n:71,t:'Люди Икс: Первый класс (2011)'}]},
+    { label:'Неделя 22', items:[{n:72,t:'Росомаха: Бессмертный (2013)'},{n:73,t:'Люди Икс: Дни минувшего будущего (2014)'},{n:74,t:'Люди Икс: Апокалипсис (2016)'},{n:75,t:'Логан (2017)',isNew:true},{n:76,t:'Люди Икс: Тёмный Феникс (2019)'},{n:77,t:'Новые мутанты (2020)'}]}
+  ]},
+  { id:'legacypre2', label:'Неделя 23: Классический Marvel (до Дэдпула)', cls:'phase-legacypre', weeks:[
+    { label:'Неделя 23', items:[{n:78,t:'Блэйд'},{n:79,t:'Блэйд 2'},{n:80,t:'Блэйд: Троица'},{n:81,t:'Сорвиголова (2003)'},{n:82,t:'Электра'}]}
+  ]},
+  { id:'f4dp', label:'Неделя 24: Фантастическая четвёрка + Сага Дэдпула', cls:'phase-f4dp', weeks:[
+    { label:'Неделя 24', items:[{n:83,t:'Фантастическая четвёрка (2005)'},{n:84,t:'Фантастическая четвёрка: Вторжение Серебряного сёрфера'},{n:85,t:'Дэдпул'},{n:86,t:'Дэдпул 2'},{n:87,t:'Дэдпул и Росомаха',isNew:true}]}
+  ]},
+  { id:'final', label:'Недели 25-26: Финальный отрезок (до Судного дня)', cls:'phase-final', weeks:[
+    { label:'Недели 25-26', items:[{n:88,t:'Агата всегда и везде'},{n:89,t:'Сорвиголова: Рождённый заново',isNew:true},{n:90,t:'Каратель (специальный выпуск)',isNew:true},{n:91,t:'Человек-паук: Новый день',isNew:true},{n:92,t:'Капитан Америка: Дивный новый мир',isNew:true},{n:93,t:'Громовержцы',isNew:true},{n:94,t:'Фантастическая четвёрка',isNew:true}]},
+    { label:'Финальный просмотр', items:[{n:95,t:'Мстители: Финал (повтор)',isNew:true}]}
+  ]}
+];
+
+let watched = JSON.parse(localStorage.getItem('mcu_ru2') || '[]');
+let filter = 'all';
+
+function save() { try { localStorage.setItem('mcu_ru2', JSON.stringify(watched)); } catch(e){} }
+
+function toggle(n) {
+  watched = watched.includes(n) ? watched.filter(x=>x!==n) : [...watched, n];
+  save(); render();
+}
+
+function resetAll() {
+  if (confirm('Сбросить весь прогресс?')) { watched=[]; save(); render(); }
+}
+
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function render() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  phases.forEach(phase => {
+    const allItems = phase.weeks.flatMap(w=>w.items);
+    const wCount = allItems.filter(i=>watched.includes(i.n)).length;
+
+    const section = document.createElement('div');
+    section.className = 'phase-section';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'phase-header ' + phase.cls;
+    hdr.innerHTML = '<span>'+phase.label+'</span><span class="phase-count">'+wCount+'/'+allItems.length+'</span>';
+    section.appendChild(hdr);
+
+    const grid = document.createElement('div');
+    grid.className = 'items-grid';
+    let hasVisible = false;
+
+    phase.weeks.forEach(week => {
+      const weekItems = week.items.filter(item => {
+        if (filter==='watched') return watched.includes(item.n);
+        if (filter==='unwatched') return !watched.includes(item.n);
+        return true;
+      });
+      if (!weekItems.length) return;
+      hasVisible = true;
+
+      const wl = document.createElement('div');
+      wl.className = 'week-label';
+      wl.textContent = week.label;
+      grid.appendChild(wl);
+
+      weekItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item' + (watched.includes(item.n) ? ' watched' : '');
+        div.innerHTML =
+          '<div class="check"><span class="check-icon">&#10003;</span></div>' +
+          '<span class="item-num">'+item.n+'.</span>' +
+          '<span class="item-title">'+item.t+'</span>' +
+          (item.isNew ? '<span class="new-badge">Новинка</span>' : '');
+        div.onclick = (function(num){ return function(){ toggle(num); }; })(item.n);
+        grid.appendChild(div);
+      });
+    });
+
+    if (hasVisible) { section.appendChild(grid); main.appendChild(section); }
+  });
+
+  const done = watched.length, total = 95;
+  document.getElementById('prog-text').textContent = done + ' / ' + total + ' просмотрено';
+  document.getElementById('prog-fill').style.width = (done/total*100).toFixed(1)+'%';
+}
+
+render();
+</script>
+</body>
+</html>
